@@ -3,12 +3,12 @@ import numpy as np
 from schemas.models import EmbeddedFilm, RankedFilm
 
 
-def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_centroids: np.ndarray, top_n: int = 10) -> list[RankedFilm]:
+def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_clusters: np.ndarray, top_n: int = 10) -> list[RankedFilm]:
     """Score watchlist films against taste clusters and return the top N ranked"""
 
     watchlist = [film for film in embedded_films if film.on_watchlist]
 
-    if not watchlist or taste_centroids.shape[0] == 0:
+    if not watchlist or taste_clusters.shape[0] == 0:
         return []
 
     embeddings = np.asarray(
@@ -16,10 +16,10 @@ def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_centroids: np.ndarr
 
     # Normalize film embeddings and taste centroids
     film_norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
-    centroid_norms = np.linalg.norm(taste_centroids, axis=1, keepdims=True)
+    centroid_norms = np.linalg.norm(taste_clusters, axis=1, keepdims=True)
 
     films_normed = embeddings / film_norms  # (n watchlist, 384)
-    clusters_normed = taste_centroids / centroid_norms  # (n centroids, 384)
+    clusters_normed = taste_clusters / centroid_norms  # (n centroids, 384)
 
     # Similarity matrix (n watchlist, n centroids)
     similarity = films_normed @ clusters_normed.T

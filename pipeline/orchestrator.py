@@ -17,6 +17,7 @@ def run_pipeline():
     taste_clusters = build_taste_clusters(embedded_films)
     ranked = rank_watchlist(embedded_films, taste_clusters, 5)
 
+    print()
     for film in ranked:
         print(film.title, f"({film.year})")
         print(f"Directed by: {', '.join(film.directors)}")

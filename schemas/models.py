@@ -36,6 +36,9 @@ class EnrichedFilm(BaseModel):
 
 class EmbeddedFilm(BaseModel):
     title: str
+    year: int
+    genres: list[str]
+    directors: list[str]
     embedding: list[float]
     rating: float | None
     on_watchlist: bool

@@ -10,7 +10,18 @@ def embed_films(films: list[EnrichedFilm]) -> list[EmbeddedFilm]:
     text_blobs = [_build_text_blob(film) for film in films]
     embeddings = model.encode(text_blobs)
 
-    return [EmbeddedFilm(title=film.title, embedding=embedding, rating=film.rating, on_watchlist=film.on_watchlist) for film, embedding in zip(films, embeddings)]
+    return [
+        EmbeddedFilm(
+            title=film.title,
+            year=film.year,
+            genres=film.genres,
+            directors=film.directors,
+            embedding=embedding,
+            rating=film.rating,
+            on_watchlist=film.on_watchlist
+        )
+        for film, embedding in zip(films, embeddings)
+    ]
 
 
 def _build_text_blob(film: EnrichedFilm) -> str:
