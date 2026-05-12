@@ -20,7 +20,7 @@ def _parse_ratings() -> list[Film]:
     df = pd.read_csv("dataset/ratings.csv")
     df = df.dropna()
 
-    films = [Film(title=row["Name"], decade=_convert_to_decade(row["Year"]), rating=row["Rating"],
+    films = [Film(title=row["Name"], year=row["Year"], decade=_convert_to_decade(row["Year"]), rating=row["Rating"],
                   on_watchlist=False) for index, row in df.iterrows()]
 
     return films
@@ -33,7 +33,7 @@ def _parse_watchlist() -> list[Film]:
     df = df.dropna()
     df = df[df["Year"] <= datetime.now().year]
 
-    films = [Film(title=row["Name"], decade=_convert_to_decade(row["Year"]), rating=None,
+    films = [Film(title=row["Name"], year=row["Year"], decade=_convert_to_decade(row["Year"]), rating=None,
                   on_watchlist=True) for index, row in df.iterrows()]
 
     return films
