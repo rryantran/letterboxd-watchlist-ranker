@@ -7,9 +7,8 @@ from pipeline.clusterer import build_taste_clusters
 from pipeline.ranker import rank_watchlist
 
 
-def run_pipeline():
-    parsed_films = parse_zip(
-        'letterboxd-advantagelucy-2026-05-10-01-31-utc.zip')
+def run_pipeline(letterboxd_username: str):
+    parsed_films = parse_zip(letterboxd_username)
 
     enriched_films = asyncio.run(enrich_films(parsed_films))
 
