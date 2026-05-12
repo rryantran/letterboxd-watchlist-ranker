@@ -39,3 +39,12 @@ class EmbeddedFilm(BaseModel):
     embedding: list[float]
     rating: float | None
     on_watchlist: bool
+
+
+class RankedFilm(BaseModel):
+    title: str
+    year: int
+    directors: list[str]
+    genres: list[str]
+    score: float
+    cluster_index: int

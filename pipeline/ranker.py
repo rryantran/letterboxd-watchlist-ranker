@@ -1,0 +1,43 @@
+import numpy as np
+
+from schemas.models import EmbeddedFilm, RankedFilm
+
+
+def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_centroids: np.ndarray, top_n: int = 10) -> list[RankedFilm]:
+    """Score watchlist films against taste clusters and return the top N ranked"""
+
+    watchlist = [film for film in embedded_films if film.on_watchlist]
+
+    if not watchlist or taste_centroids.shape[0] == 0:
+        return []
+
+    embeddings = np.asarray(
+        [film.embedding for film in watchlist], dtype=np.float64)
+
+    # Normalize film embeddings and taste centroids
+    film_norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+    centroid_norms = np.linalg.norm(taste_centroids, axis=1, keepdims=True)
+
+    films_normed = embeddings / film_norms  # (n watchlist, 384)
+    clusters_normed = taste_centroids / centroid_norms  # (n centroids, 384)
+
+    # Similarity matrix (n watchlist, n centroids)
+    similarity = films_normed @ clusters_normed.T
+
+    best_cluster = np.argmax(similarity, axis=1)  # (n watchlist,)
+    best_score = np.max(similarity, axis=1)  # (n watchlist,)
+
+    # Rank films by score (array of film indices, descending)
+    ranked = np.argsort(best_score)[::-1][:top_n]
+
+    return [
+        RankedFilm(
+            title=watchlist[i].title,
+            year=watchlist[i].year,
+            genres=watchlist[i].genres,
+            directors=watchlist[i].directors,
+            score=round(float(best_score[i]), 4),
+            cluster_index=int(best_cluster[i]),
+        )
+        for i in ranked
+    ]
