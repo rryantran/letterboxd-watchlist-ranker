@@ -1,4 +1,3 @@
-import asyncio
 import httpx
 from aiolimiter import AsyncLimiter
 from datetime import date
@@ -101,11 +100,13 @@ async def _get_tmdb_id(client: httpx.AsyncClient, title: str, year: int) -> int 
 
     # Prevent duplicates by checking release year (issue with identical titles, +/- 1 year tolerance for festival releases)
     for result in results:
-        titles = [result.get("title", "").lower().strip(),
-                  result.get("original_title", "").lower().strip()]
+        titles = [
+            _normalize_title(result.get("title", "")),
+            _normalize_title(result.get("original_title", ""))
+        ]
 
         # Check if title matches at least one listed title
-        if title.lower().strip() not in titles:
+        if _normalize_title(title) not in titles:
             continue
 
         release_date_str = result.get("release_date", "")
@@ -115,7 +116,7 @@ async def _get_tmdb_id(client: httpx.AsyncClient, title: str, year: int) -> int 
 
         year_diff = abs(int(release_date_str.split("-")[0]) - year)
 
-        if year_diff <= 1:
+        if year_diff <= 2:
             release_date = date.fromisoformat(release_date_str)
 
             # Filter out future releases
@@ -123,6 +124,9 @@ async def _get_tmdb_id(client: httpx.AsyncClient, title: str, year: int) -> int 
                 return None
 
             return result.get("id")
+
+    print(f"No TMDB ID found for: {title} ({year})")
+    print(f"TMDB titles: {titles}")
 
     return None
 
@@ -156,3 +160,21 @@ def _crew_by_job(crew: list[dict], job: str) -> list[str]:
     """Get crew by job title"""
 
     return [c["name"] for c in crew if c["job"] == job]
+
+
+def _normalize_title(title: str) -> str:
+    """Normalize title (lowercase, standardize dashes)"""
+
+    dash_chars = (
+        "\u2010",
+        "\u2011",
+        "\u2012",
+        "\u2013",
+        "\u2014",
+        "\u2212",
+    )
+
+    for char in dash_chars:
+        title = title.replace(char, "-")
+
+    return title.lower().strip()
