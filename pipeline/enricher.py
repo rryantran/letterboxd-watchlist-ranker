@@ -125,9 +125,6 @@ async def _get_tmdb_id(client: httpx.AsyncClient, title: str, year: int) -> int 
 
             return result.get("id")
 
-    print(f"No TMDB ID found for: {title} ({year})")
-    print(f"TMDB titles: {titles}")
-
     return None
 
 

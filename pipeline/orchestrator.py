@@ -2,6 +2,7 @@ import asyncio
 
 from pipeline.parser import parse_zip
 from pipeline.enricher import enrich_films
+from pipeline.embedder import embed_films
 
 
 def run_pipeline():
@@ -10,4 +11,6 @@ def run_pipeline():
 
     enriched_films = asyncio.run(enrich_films(parsed_films))
 
-    print(enriched_films[:5])
+    embedded_films = embed_films(enriched_films)
+
+    return embedded_films

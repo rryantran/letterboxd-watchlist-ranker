@@ -21,7 +21,7 @@ class EnrichedFilm(BaseModel):
     studio: str = ""
 
     # Credits
-    top_cast: list[str] = []  # 3-5 actors
+    top_cast: list[str] = []  # 3 actors
     directors: list[str]
     writers: list[str] = []
     cinematographers: list[str] = []
@@ -31,4 +31,11 @@ class EnrichedFilm(BaseModel):
 
     # Other
     rating: float | None = None
+    on_watchlist: bool
+
+
+class EmbeddedFilm(BaseModel):
+    title: str
+    embedding: list[float]
+    rating: float | None
     on_watchlist: bool
