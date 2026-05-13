@@ -32,14 +32,15 @@ def _pick_k(n: int, min_films_per_cluster: int = 18) -> int:
     return min(max(1, n // min_films_per_cluster), 8)
 
 
-def _rating_weight(rating: float, min_rating: float = 3.0, max_rating: float = 5.0, floor: float = 0.1) -> float:
-    """Map rating (3-5) to weight (alternative version)"""
+def _rating_weight(rating: float, min_rating: float = 3.0, max_rating: float = 5.0) -> float:
+    """Map rating (3-5) to weight"""
 
-    normalized = (rating - min_rating) / (max_rating - min_rating)
+    return (rating - min_rating) / (max_rating - min_rating)
 
-    return floor + (1 - floor) * normalized
 
-# def _rating_weight(rating: float, min_rating: float = 3.0, max_rating: float = 5.0) -> float:
-#     """Map rating (3-5) to weight"""
+# def _rating_weight(rating: float, min_rating: float = 3.0, max_rating: float = 5.0, floor: float = 0.1) -> float:
+#     """Map rating (3-5) to weight (alternative version)"""
 
-#     return (rating - min_rating) / (max_rating - min_rating)
+#     normalized = (rating - min_rating) / (max_rating - min_rating)
+
+#     return floor + (1 - floor) * normalized
