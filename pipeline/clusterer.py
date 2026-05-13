@@ -18,8 +18,7 @@ def build_taste_clusters(embedded_films: list[EmbeddedFilm]) -> np.ndarray:
     weights = np.asarray([_rating_weight(film.rating)
                          for film in ratings], dtype=np.float64)
 
-    n = len(ratings)
-    k = _pick_k(n)
+    k = _pick_k(len(ratings))
 
     kmeans = KMeans(n_clusters=k, n_init="auto", random_state=67)
     kmeans.fit(embeddings, sample_weight=weights)
@@ -33,14 +32,14 @@ def _pick_k(n: int, min_films_per_cluster: int = 18) -> int:
     return min(max(1, n // min_films_per_cluster), 8)
 
 
-def _rating_weight(rating: float, min_rating: float = 3.0, max_rating: float = 5.0) -> float:
-    """Calculate weight based on rating"""
-
-    return (rating - min_rating) / (max_rating - min_rating)
-
-
-def _rating_weight_2(rating: float, min_rating: float = 3.0, max_rating: float = 5.0, floor: float = 0.1) -> float:
-    """Calculate weight based on rating (alternative method)"""
+def _rating_weight(rating: float, min_rating: float = 3.0, max_rating: float = 5.0, floor: float = 0.1) -> float:
+    """Map rating (3-5) to weight (alternative version)"""
 
     normalized = (rating - min_rating) / (max_rating - min_rating)
+
     return floor + (1 - floor) * normalized
+
+# def _rating_weight(rating: float, min_rating: float = 3.0, max_rating: float = 5.0) -> float:
+#     """Map rating (3-5) to weight"""
+
+#     return (rating - min_rating) / (max_rating - min_rating)

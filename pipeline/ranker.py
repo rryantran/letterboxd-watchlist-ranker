@@ -36,7 +36,7 @@ def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_clusters: np.ndarra
             year=watchlist[i].year,
             genres=watchlist[i].genres,
             directors=watchlist[i].directors,
-            score=round(float(best_score[i]), 4),
+            score=float(best_score[i]),
             cluster_index=int(best_cluster[i]),
         )
         for i in ranked

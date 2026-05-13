@@ -14,12 +14,12 @@ def run_pipeline(letterboxd_username: str):
 
     embedded_films = embed_films(enriched_films)
     taste_clusters = build_taste_clusters(embedded_films)
-    ranked = rank_watchlist(embedded_films, taste_clusters, 5)
+    ranked = rank_watchlist(embedded_films, taste_clusters, 10)
 
     print()
     for film in ranked:
         print(film.title, f"({film.year})")
         print(f"Directed by: {', '.join(film.directors)}")
         print(f"Genres: {', '.join(film.genres)}")
-        print(f"Similarity Score: {film.score * 100}%")
+        print(f"Similarity Score: {film.score * 100:.2f}%")
         print()
