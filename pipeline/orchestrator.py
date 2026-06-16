@@ -7,14 +7,14 @@ from pipeline.clusterer import build_taste_clusters
 from pipeline.ranker import rank_watchlist
 
 
-def run_pipeline(letterboxd_username: str):
+def run_pipeline(letterboxd_username: str, top_n: int = 10):
     parsed_films = parse_zip(letterboxd_username)
 
     enriched_films = asyncio.run(enrich_films(parsed_films))
 
     embedded_films = embed_films(enriched_films)
     taste_clusters = build_taste_clusters(embedded_films)
-    ranked = rank_watchlist(embedded_films, taste_clusters, 10)
+    ranked = rank_watchlist(embedded_films, taste_clusters, top_n)
 
     print()
     for film in ranked:
