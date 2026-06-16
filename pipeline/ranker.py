@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 from schemas.models import EmbeddedFilm, RankedFilm
 
@@ -14,15 +15,7 @@ def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_clusters: np.ndarra
     embeddings = np.asarray(
         [film.embedding for film in watchlist], dtype=np.float64)
 
-    # Normalize film embeddings and taste centroids
-    film_norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
-    centroid_norms = np.linalg.norm(taste_clusters, axis=1, keepdims=True)
-
-    films_normed = embeddings / film_norms  # (n watchlist, 384)
-    clusters_normed = taste_clusters / centroid_norms  # (n centroids, 384)
-
-    # Similarity matrix (n watchlist, n centroids)
-    similarity = films_normed @ clusters_normed.T
+    similarity = cosine_similarity(embeddings, taste_clusters)
 
     best_cluster = np.argmax(similarity, axis=1)  # (n watchlist,)
     best_score = np.max(similarity, axis=1)  # (n watchlist,)
