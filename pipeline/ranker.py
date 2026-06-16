@@ -5,7 +5,7 @@ from schemas.models import EmbeddedFilm, RankedFilm
 
 
 def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_clusters: np.ndarray, top_n: int = 10) -> list[RankedFilm]:
-    """Score watchlist films against taste clusters and return the top N ranked"""
+    """Score watchlist films by mean similarity to their top 3 taste clusters"""
 
     watchlist = [film for film in embedded_films if film.on_watchlist]
 
@@ -17,11 +17,12 @@ def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_clusters: np.ndarra
 
     similarity = cosine_similarity(embeddings, taste_clusters)
 
-    best_cluster = np.argmax(similarity, axis=1)  # (n watchlist,)
-    best_score = np.max(similarity, axis=1)  # (n watchlist,)
+    k = min(3, similarity.shape[1])  # 3 or less clusters
+    top_k = np.sort(similarity, axis=1)[:, -k:]
+    scores = top_k.mean(axis=1)
 
     # Rank films by score (array of film indices, descending)
-    ranked = np.argsort(best_score)[::-1][:top_n]
+    ranked = np.argsort(scores)[::-1][:top_n]
 
     return [
         RankedFilm(
@@ -29,8 +30,7 @@ def rank_watchlist(embedded_films: list[EmbeddedFilm], taste_clusters: np.ndarra
             year=watchlist[i].year,
             genres=watchlist[i].genres,
             directors=watchlist[i].directors,
-            score=float(best_score[i]),
-            cluster_index=int(best_cluster[i]),
+            score=float(scores[i]),
         )
         for i in ranked
     ]

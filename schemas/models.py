@@ -50,4 +50,3 @@ class RankedFilm(BaseModel):
     directors: list[str]
     genres: list[str]
     score: float
-    cluster_index: int
